@@ -103,6 +103,11 @@ public class JerseyBase
         throws TException
     {
         LoggerInf logger = null;
+        if (DEBUG)System.out.println("***JerseyBase add " 
+                + " - node:" + node + "\n"
+                + " - key:" + key + "\n"
+                + " - sha256:" + sha256 + "\n"
+        );
         try {
             if ((sha256 != null) && (sha256.length() == 0)) sha256 = null;
             CloudhostService service = getService(sc);
@@ -287,6 +292,11 @@ public class JerseyBase
         throws TException
     {
 
+        if (DEBUG)System.out.println("***JerseyBase getMetadata " 
+                + " - node:" + node + "\n"
+                + " - key:" + key + "\n"
+                + " - formatType:" + formatType + "\n"
+        );
         LoggerInf logger = null;
         try {
             CloudhostService service = getService(sc);
