@@ -318,7 +318,7 @@ public class JerseyBase
         }
     }
     
-    public Response getServiceState(
+    public Response getServiceStatus(
             long node,
             String formatType,
             CloseableService cs,
@@ -330,7 +330,37 @@ public class JerseyBase
         try {
             CloudhostService service = getService(sc);
             logger = service.getLogger();
-            CloudhostServiceState responseState = service.getServiceState(node);
+            CloudhostServiceState responseState = service.getServiceStatus(node);
+            return getStateResponse(responseState, formatType, logger, cs, sc);
+
+        } catch (TException tex) {
+            try {
+                return getExceptionResponse(cs, tex, "xml", logger);
+
+            } catch (Exception ex2) {
+                throw new TException.GENERAL_EXCEPTION(ex2);
+            }
+
+        } catch (Exception ex) {
+            System.out.println("TRACE:" + StringUtil.stackTrace(ex));
+            throw new TException.GENERAL_EXCEPTION(MESSAGE + "Exception:" + ex);
+        }
+    }
+    
+    public Response getServiceState(
+            long node,
+            Integer forceTest,
+            String formatType,
+            CloseableService cs,
+            ServletConfig sc)
+        throws TException
+    {
+
+        LoggerInf logger = null;
+        try {
+            CloudhostService service = getService(sc);
+            logger = service.getLogger();
+            CloudhostServiceState responseState = service.getServiceState(node, forceTest);
             return getStateResponse(responseState, formatType, logger, cs, sc);
 
         } catch (TException tex) {

@@ -99,8 +99,69 @@ public class JerseyCloudhost
      * @throws TException
      */
     @GET
+    @Path("/status/{nodeid}")
+    public Response callGetServiceStatus(
+            @PathParam("nodeid") String nodeIDS,
+            @DefaultValue("anvl") @QueryParam("t") String formatType,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+        int nodeID = getNodeID(nodeIDS);
+        System.out.println("Status entered");
+        return getServiceStatus(
+            nodeID,
+            formatType,
+            cs,
+            sc);
+    }
+
+    /**
+     * Get state information about a specific node
+     * @param nodeID node identifier
+     * @param formatType user provided format type
+     * @param cs on close actions
+     * @param sc ServletConfig used to get system configuration
+     * @return formatted service information
+     * @throws TException
+     */
+    @GET
     @Path("/state/{nodeid}")
     public Response callGetServiceState(
+            @PathParam("nodeid") String nodeIDS,
+            @DefaultValue("") @QueryParam("forceTest") String forceTestS,
+            @DefaultValue("anvl") @QueryParam("t") String formatType,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+        int nodeID = getNodeID(nodeIDS);
+        Integer forceTest = null;
+        System.out.println("State entered");
+        if (forceTestS.length() > 0) {
+            forceTest = Integer.parseInt(forceTestS);
+            System.out.println("***forceTest=" + forceTest);
+        }
+        return getServiceState(
+            nodeID,
+            forceTest,
+            formatType,
+            cs,
+            sc);
+    }
+
+    /**
+     * Get state information about a specific node
+     * @param nodeID node identifier
+     * @param formatType user provided format type
+     * @param cs on close actions
+     * @param sc ServletConfig used to get system configuration
+     * @return formatted service information
+     * @throws TException
+     */
+    @GET
+    @Path("/force/{nodeid}/{forceTest}")
+    public Response callGetServiceForce(
             @PathParam("nodeid") String nodeIDS,
             @DefaultValue("anvl") @QueryParam("t") String formatType,
             @Context CloseableService cs,
@@ -111,6 +172,7 @@ public class JerseyCloudhost
         System.out.println("State entered");
         return getServiceState(
             nodeID,
+            null,
             formatType,
             cs,
             sc);

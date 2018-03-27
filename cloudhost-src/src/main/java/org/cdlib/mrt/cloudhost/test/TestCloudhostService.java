@@ -71,7 +71,7 @@ public class TestCloudhostService
             throws IOException,TException 
     {
         try {
-            CloudhostServiceState state = service.getServiceState(node);
+            CloudhostServiceState state = service.getServiceStatus(node);
             System.out.println(state.dump("serviceState"));
             InputStream inStream = new FileInputStream(infile);
             CloudhostAddState addState = service.add(node, key, null, inStream);
@@ -120,7 +120,7 @@ public class TestCloudhostService
             throws IOException,TException 
     {
         try {
-            CloudhostServiceState state = manager.getServiceState();
+            CloudhostServiceState state = manager.getServiceStatus();
             System.out.println(state.dump("serviceState"));
             CloudhostMetaState propState = manager.getMeta(key);
             System.out.println(propState.dump("propState"));

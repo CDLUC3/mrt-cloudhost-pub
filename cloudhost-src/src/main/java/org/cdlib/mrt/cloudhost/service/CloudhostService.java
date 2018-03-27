@@ -126,17 +126,31 @@ public class CloudhostService
         }
     }
     
-    public CloudhostServiceState getServiceState(
+    public CloudhostServiceState getServiceStatus(
             long node)
         throws TException
     {
         try {
             CloudServiceManager manager = getManager(node);
-            return manager.getServiceState();
+            return manager.getServiceStatus();
         
         } catch (TException tex) {
             throw tex;
             
+        }       
+    }
+    
+    public CloudhostServiceState getServiceState(
+            long node,
+            Integer forceTest)
+        throws TException
+    {
+        try {
+            CloudServiceManager manager = getManager(node);
+            return manager.getServiceState(node, forceTest);
+        
+        } catch (TException tex) {
+            throw tex;
         }       
     }
     

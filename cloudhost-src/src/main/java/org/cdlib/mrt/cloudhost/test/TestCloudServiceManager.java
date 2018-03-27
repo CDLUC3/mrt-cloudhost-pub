@@ -53,7 +53,7 @@ public class TestCloudServiceManager
             throws IOException,TException 
     {
         try {
-            CloudhostServiceState state = manager.getServiceState();
+            CloudhostServiceState state = manager.getServiceStatus();
             System.out.println(state.dump("serviceState"));
             CloudhostMetaState propState = manager.getMeta(key);
             System.out.println(propState.dump("propState"));
@@ -81,7 +81,7 @@ public class TestCloudServiceManager
             throws IOException,TException 
     {
         try {
-            CloudhostServiceState state = manager.getServiceState();
+            CloudhostServiceState state = manager.getServiceStatus();
             System.out.println(state.dump("serviceState"));
             CloudhostMetaState propState = manager.getMeta(key);
             System.out.println(propState.dump("propState"));

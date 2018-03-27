@@ -134,13 +134,23 @@ public class CloudServiceManager
         return state;
     }
 
-    public CloudhostServiceState getServiceState()
+    public CloudhostServiceState getServiceStatus()
         throws TException
     {
         CloudhostServiceState state = new CloudhostServiceState()
                 .setBucket(service.getBucket())
                 .setNode(service.getNode())
                 ;
+        return state;
+    }
+
+    public CloudhostServiceState getServiceState(long node, Integer forceTest)
+        throws TException
+    {
+        TestCloudhost testCloudHost = TestCloudhost.getTestCloudhost(this, logger);
+        if (forceTest != null) testCloudHost.setForceTest(forceTest);
+        CloudhostServiceState state = testCloudHost.process("ark:/99999/test|1|prod/test");
+        state.setNode(node);
         return state;
     }
 
