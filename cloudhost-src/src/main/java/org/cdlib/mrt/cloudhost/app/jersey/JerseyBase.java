@@ -77,7 +77,7 @@ public class JerseyBase
     protected static final String MESSAGE = NAME + ": ";
     protected static final FormatterInf.Format DEFAULT_OUTPUT_FORMAT
             = FormatterInf.Format.xml;
-    protected static final boolean DEBUG = false;
+    private static final boolean DEBUG = false;
     protected static final String NL = System.getProperty("line.separator");
 
     protected LoggerInf defaultLogger = new TFileLogger("Jersey", 10, 10);
@@ -231,7 +231,7 @@ public class JerseyBase
             CloudhostService service = getService(sc);
             logger = service.getLogger();
             service.getMetaExc(node, key);
-            System.out.println("after service.getMetadata");
+            if (DEBUG) System.out.println("after service.getMetadata");
             logger = service.getLogger();;
             
             CloudStreamingOutput streamingOutput = new CloudStreamingOutput(service, node, key);

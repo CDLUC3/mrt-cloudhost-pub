@@ -72,7 +72,7 @@ public class JerseyUtil
     protected static final String MESSAGE = NAME + ": ";
     protected static final FormatterInf.Format DEFAULT_OUTPUT_FORMAT
             = FormatterInf.Format.xml;
-    protected static final boolean DEBUG = true;
+    protected static final boolean DEBUG = false;
     protected static final String NL = System.getProperty("line.separator");
 
     //protected LoggerInf defaultLogger = new TFileLogger("Jersey", 10, 10);

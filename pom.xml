@@ -22,7 +22,7 @@
                 <module>cloudhost-conf</module>
                 <module>cloudhost-src</module>
                 <module>cloudhost-war</module>
-                <module>cloudhost-emb</module>
+                <module>cloudhost-jetty</module>
             </modules>
         </profile>
         <profile>
