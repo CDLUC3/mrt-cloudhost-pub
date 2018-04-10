@@ -22,11 +22,11 @@
         <artifactId>tomcat-embed-logging-juli</artifactId>
         <version>${tomcat.version}</version>
     </dependency>
-<dependency>
-    <groupId>org.apache.tomcat</groupId>
-    <artifactId>jasper</artifactId>
-    <version>6.0.32</version>
-</dependency>
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>jasper</artifactId>
+        <version>6.0.32</version>
+    </dependency>
     <dependency>
         <groupId>org.glassfish.jersey.containers</groupId>
         <artifactId>jersey-container-servlet</artifactId>
