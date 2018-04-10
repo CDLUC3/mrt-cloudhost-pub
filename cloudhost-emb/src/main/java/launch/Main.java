@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import org.cdlib.mrt.utility.FileUtil;
+import org.cdlib.mrt.utility.TException;
  
 public class Main {
  
@@ -23,7 +24,7 @@ public class Main {
     }
  
     public void start() throws ServletException, LifecycleException,
-            MalformedURLException {
+            MalformedURLException, TException {
  
         // Define a folder to hold web application contents.
         //String webappDirLocation = "/apps/replic/MRTMaven/test/embedded/context/";
@@ -42,7 +43,11 @@ public class Main {
         }
         
         File fileCloud = new File("./fileCloud");
-        fileCloud.mkdir();
+        if (!fileCloud.exists()) {
+            fileCloud.mkdir();
+            File anchor = new File(fileCloud, "bucket-anchor.txt");
+            FileUtil.string2File(anchor, "bucket anchor");
+        }
         System.setProperty("org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true");
         Tomcat tomcat = new Tomcat();
  
