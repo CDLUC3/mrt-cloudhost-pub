@@ -66,7 +66,7 @@ public class JerseyCloudhost
     protected static final String MESSAGE = NAME + ": ";
     protected static final FormatterInf.Format DEFAULT_OUTPUT_FORMAT
             = FormatterInf.Format.xml;
-    protected static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     protected static final String NL = System.getProperty("line.separator");
     
     @GET
@@ -80,7 +80,7 @@ public class JerseyCloudhost
         throws TException
     {
         int nodeID = getNodeID(nodeIDS);
-        System.out.println("Metadata entered");
+        if (DEBUG) System.out.println("Metadata entered");
         return getMetadata(
             nodeID,
             key,
@@ -108,7 +108,7 @@ public class JerseyCloudhost
         throws TException
     {
         int nodeID = getNodeID(nodeIDS);
-        System.out.println("Status entered");
+        if (DEBUG) System.out.println("Status entered");
         return getServiceStatus(
             nodeID,
             formatType,
@@ -137,7 +137,7 @@ public class JerseyCloudhost
     {
         int nodeID = getNodeID(nodeIDS);
         Integer forceTest = null;
-        System.out.println("State entered");
+        if (DEBUG) System.out.println("State entered");
         if (forceTestS.length() > 0) {
             forceTest = Integer.parseInt(forceTestS);
             System.out.println("***forceTest=" + forceTest);
@@ -169,7 +169,7 @@ public class JerseyCloudhost
         throws TException
     {
         int nodeID = getNodeID(nodeIDS);
-        System.out.println("State entered");
+        if (DEBUG) System.out.println("callGetServiceForce entered");
         return getServiceState(
             nodeID,
             null,
@@ -322,7 +322,7 @@ public class JerseyCloudhost
         throws TException
     {
         int nodeID = getNodeID(nodeIDS);
-        System.out.println("Entered callGetContent");
+        if (DEBUG) System.out.println("Entered callGetContent");
         return getCloudStream(
             nodeID,
             key,
