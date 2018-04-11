@@ -67,6 +67,10 @@ public class TestCloudhost
     private static final boolean DEBUG = false;
     
     private static final String testS = "this is a test file\n";
+    private static final String checksumType = "md5";
+    //private static final String checksum = "62659bdd975c7e7a0857d69dec1e42fe";
+    private static final String checksum = "4221d002ceb5d3c9e9137e495ceaa647"; //ok
+    private static final long testLength = testS.length();
     private final CloudServiceManager manager;
     private final String bucket;
     private final LoggerInf logger;
@@ -74,6 +78,7 @@ public class TestCloudhost
     protected CloudhostMetaState initialMeta = null;
     protected CloudhostAddState addState = null;
     protected CloudhostMetaState addMeta = null;
+    protected CloudhostFixityState fixityState = null;
     protected FileContent fileContent = null;
     protected CloudhostDeleteState deleteState = null;
     
@@ -113,6 +118,9 @@ public class TestCloudhost
         }
         if (DEBUG) meta(key);
         if (!content(key)) {
+            return retState;
+        }
+        if (!fixity(key, checksumType, checksum, testLength)) {
             return retState;
         }
         if (forceTest == 5) {
@@ -201,6 +209,30 @@ public class TestCloudhost
             
         } catch (Exception ex) {
             error = "Meta Catch Error - Unable to add content"
+                        + " - bucket:" + bucket
+                        + " - key:" + key
+                        + " - error:" + ex.toString();
+            return setError(error);
+                
+        }
+    }
+    
+    protected boolean fixity(String key, String digestType, String testDigest, long testLength)
+        throws TException
+    {
+        try {
+            fixityState = manager.fixity(key, digestType, testDigest, testLength);
+            if (DEBUG) System.out.println(fixityState.dump("fixity"));
+            if (!fixityState.isOk()) {
+                return setError(fixityState.dump("fixity"));
+            }
+            if (fixityState.getError() != null) {
+                return setError(fixityState.getError());
+            }
+            return true;
+            
+        } catch (Exception ex) {
+            error = "Fixity Catch Error - Unable to add content"
                         + " - bucket:" + bucket
                         + " - key:" + key
                         + " - error:" + ex.toString();
