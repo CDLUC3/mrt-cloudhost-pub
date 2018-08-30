@@ -32,10 +32,12 @@ package org.cdlib.mrt.cloudhost.app;
 
 
 import org.cdlib.mrt.utility.TFrameInit;
+import java.util.Properties;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import org.cdlib.mrt.cloudhost.service.CloudhostService;
+import org.cdlib.mrt.utility.PropertiesUtil;
 import org.cdlib.mrt.utility.TException;
 /**
  * Initialize handling for storage service in servlet
@@ -69,12 +71,13 @@ public class CloudhostInit
     {
         String serviceName = "cloudService";
         ServletContext servletContext = servletConfig.getServletContext();
+        Properties jettyProp = (Properties)servletContext.getAttribute("jettyProp");
+        if (jettyProp == null) System.out.println("***jettyProp not found");
         CloudhostInit cloudServiceInit  = (CloudhostInit)servletContext.getAttribute(serviceName);
         if (cloudServiceInit == null) {
-            cloudServiceInit = new CloudhostInit(Type.Regular, servletConfig, serviceName);
+            cloudServiceInit = new CloudhostInit(Type.Regular, servletConfig, serviceName, jettyProp);
             servletContext.setAttribute(serviceName, cloudServiceInit);
         }
-
         return cloudServiceInit;
     }
 
@@ -88,15 +91,7 @@ public class CloudhostInit
             ServletConfig servletConfig)
             throws TException
     {
-        String serviceName = "storageService";
-        ServletContext servletContext = servletConfig.getServletContext();
-        CloudhostInit cloudServiceInit  = (CloudhostInit)servletContext.getAttribute(serviceName);
-        if (cloudServiceInit == null) {
-            cloudServiceInit = new CloudhostInit(Type.Default, servletConfig, serviceName);
-            servletContext.setAttribute(serviceName, cloudServiceInit);
-        }
-
-        return cloudServiceInit;
+        return getCloudhostInit(servletConfig);
     }
 
     /**
@@ -105,17 +100,22 @@ public class CloudhostInit
      * @param serviceName service name for logging and for persistence
      * @throws TException
      */
-    protected CloudhostInit(Type type, ServletConfig servletConfig, String serviceName)
+    protected CloudhostInit(Type type, ServletConfig servletConfig, String serviceName, Properties jettyProp)
             throws TException
     {
         super(servletConfig, serviceName);
+        Properties resourceProp = tFrame.getProperties();
+        if (jettyProp != null) {
+            resourceProp.putAll(jettyProp);
+            System.out.println(PropertiesUtil.dumpProperties("***" + NAME + "***", jettyProp));
+        }
         if (type == Type.Regular) {
             cloudhostService = CloudhostService.getCloudhostService(
-                    tFrame.getLogger(), tFrame.getProperties());
+                    tFrame.getLogger(), resourceProp);
         }
         if (type == Type.Default) {
             cloudhostService = CloudhostService.getCloudhostService(
-                    tFrame.getLogger(), tFrame.getProperties());
+                    tFrame.getLogger(), resourceProp);
         }
     }
 }

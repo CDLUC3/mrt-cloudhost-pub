@@ -79,7 +79,7 @@ public class JerseyCloudhost
             @Context ServletConfig sc)
         throws TException
     {
-        int nodeID = getNodeID(nodeIDS);
+        long nodeID = getNodeID(nodeIDS);
         if (DEBUG) System.out.println("Metadata entered");
         return getMetadata(
             nodeID,
@@ -107,7 +107,7 @@ public class JerseyCloudhost
             @Context ServletConfig sc)
         throws TException
     {
-        int nodeID = getNodeID(nodeIDS);
+        long nodeID = getNodeID(nodeIDS);
         if (DEBUG) System.out.println("Status entered");
         return getServiceStatus(
             nodeID,
@@ -135,7 +135,7 @@ public class JerseyCloudhost
             @Context ServletConfig sc)
         throws TException
     {
-        int nodeID = getNodeID(nodeIDS);
+        long nodeID = getNodeID(nodeIDS);
         Integer forceTest = null;
         if (DEBUG) System.out.println("State entered");
         if (forceTestS.length() > 0) {
@@ -168,7 +168,7 @@ public class JerseyCloudhost
             @Context ServletConfig sc)
         throws TException
     {
-        int nodeID = getNodeID(nodeIDS);
+        long nodeID = getNodeID(nodeIDS);
         if (DEBUG) System.out.println("callGetServiceForce entered");
         return getServiceState(
             nodeID,
@@ -197,7 +197,7 @@ public class JerseyCloudhost
                     + " - key=" + key + NL
                     );
         if (DEBUG) System.out.println("addVersionMultipart entered");
-        int nodeID = getNodeID(nodeIDS);
+        long nodeID = getNodeID(nodeIDS);
         
         return add(
             nodeID,
@@ -228,7 +228,7 @@ public class JerseyCloudhost
                     + " - key=" + key + NL
                     );
         if (DEBUG) System.out.println("addVersionMultipart entered");
-        int nodeID = getNodeID(nodeIDS);
+        long nodeID = getNodeID(nodeIDS);
         if (inStream == null) {
             throw new TException.INVALID_OR_MISSING_PARM("inStream null");
         }
@@ -265,7 +265,7 @@ public class JerseyCloudhost
                     + " - lengthS=" + lengthS + NL
                     );
         if (DEBUG) System.out.println("addVersionMultipart entered");
-        int nodeID = getNodeID(nodeIDS);
+        long nodeID = getNodeID(nodeIDS);
         
         return fixity(
             nodeID,
@@ -299,7 +299,7 @@ public class JerseyCloudhost
                     + " - lengthS=" + lengthS + NL
                     );
         if (DEBUG) System.out.println("addVersionMultipart entered");
-        int nodeID = getNodeID(nodeIDS);
+        long nodeID = getNodeID(nodeIDS);
         
         return fixity(
             nodeID,
@@ -321,7 +321,7 @@ public class JerseyCloudhost
             @Context ServletConfig sc)
         throws TException
     {
-        int nodeID = getNodeID(nodeIDS);
+        long nodeID = getNodeID(nodeIDS);
         if (DEBUG) System.out.println("Entered callGetContent");
         return getCloudStream(
             nodeID,
@@ -340,9 +340,266 @@ public class JerseyCloudhost
             @Context ServletConfig sc)
         throws TException
     {
-        int nodeID = getNodeID(nodeIDS);
+        long nodeID = getNodeID(nodeIDS);
         return deleteContent(
             nodeID,
+            key,
+            formatType,
+            cs,
+            sc);
+    }
+
+    
+    @GET
+    @Path("/metadata/{key}")
+    public Response callGetMetadata(
+            @PathParam("key") String key,
+            @DefaultValue("xhtml") @QueryParam("t") String formatType,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+        if (DEBUG) System.out.println("Metadata entered");
+        return getMetadata(
+            null,
+            key,
+            formatType,
+            cs,
+            sc);
+    }
+
+    /**
+     * Get state information about a specific node
+     * @param nodeID node identifier
+     * @param formatType user provided format type
+     * @param cs on close actions
+     * @param sc ServletConfig used to get system configuration
+     * @return formatted service information
+     * @throws TException
+     */
+    @GET
+    @Path("/status")
+    public Response callGetServiceStatus(
+            @DefaultValue("anvl") @QueryParam("t") String formatType,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+        if (DEBUG) System.out.println("Status entered");
+        return getServiceStatus(
+            null,
+            formatType,
+            cs,
+            sc);
+    }
+
+    /**
+     * Get state information about a specific node
+     * @param nodeID node identifier
+     * @param formatType user provided format type
+     * @param cs on close actions
+     * @param sc ServletConfig used to get system configuration
+     * @return formatted service information
+     * @throws TException
+     */
+    @GET
+    @Path("/state")
+    public Response callGetServiceState(
+            @DefaultValue("") @QueryParam("forceTest") String forceTestS,
+            @DefaultValue("anvl") @QueryParam("t") String formatType,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+        Integer forceTest = null;
+        if (DEBUG) System.out.println("State entered");
+        if (forceTestS.length() > 0) {
+            forceTest = Integer.parseInt(forceTestS);
+            System.out.println("***forceTest=" + forceTest);
+        }
+        return getServiceState(
+            null,
+            forceTest,
+            formatType,
+            cs,
+            sc);
+    }
+
+    /**
+     * Get state information about a specific node
+     * @param nodeID node identifier
+     * @param formatType user provided format type
+     * @param cs on close actions
+     * @param sc ServletConfig used to get system configuration
+     * @return formatted service information
+     * @throws TException
+     */
+    @GET
+    @Path("/force/{forceTest}")
+    public Response callGetServiceForce(
+            @DefaultValue("anvl") @QueryParam("t") String formatType,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+        if (DEBUG) System.out.println("callGetServiceForce entered");
+        return getServiceState(
+            null,
+            null,
+            formatType,
+            cs,
+            sc);
+    }
+    
+    
+    @POST
+    @Path("/content")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response callAddMultipart(
+            @DefaultValue("") @FormDataParam("key") String key,
+            @DefaultValue("") @FormDataParam("sha256") String sha256,
+            @DefaultValue("") @FormDataParam("data") InputStream inStream, 
+            @DefaultValue("anvl") @QueryParam("t") String formatType,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+        if (DEBUG) System.out.println(MESSAGE + "callAddMultipart entered"
+                    + " - key=" + key + NL
+                    );
+        if (DEBUG) System.out.println("addVersionMultipart entered");
+        
+        return add(
+            null,
+            key,
+            sha256,
+            inStream, 
+            formatType,
+            cs,
+            sc);
+    }
+    
+    
+    @POST
+    @Path("/content/{key}")
+    @Consumes(MediaType.APPLICATION_OCTET_STREAM)
+    public Response callAdd(
+            @PathParam("key") String key,
+            @DefaultValue("") @QueryParam("sha256") String sha256,
+            @DefaultValue("xhtml") @QueryParam("t") String formatType,
+            InputStream inStream,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+        if (DEBUG) System.out.println(MESSAGE + "callAddMultipart entered"
+                    + " - key=" + key + NL
+                    );
+        if (DEBUG) System.out.println("addVersionMultipart entered");
+        if (inStream == null) {
+            throw new TException.INVALID_OR_MISSING_PARM("inStream null");
+        }
+        return add(
+            null,
+            key,
+            sha256,
+            inStream, 
+            formatType,
+            cs,
+            sc);
+    }
+    
+    
+    @PUT
+    @Path("/fixity")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response callFixityMultipart(
+            @DefaultValue("") @FormDataParam("key") String key,
+            @DefaultValue("") @FormDataParam("digestType") String digestType,
+            @DefaultValue("") @FormDataParam("digest") String digest, 
+            @DefaultValue("") @FormDataParam("length") String lengthS, 
+            @DefaultValue("anvl") @QueryParam("t") String formatType,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+        if (DEBUG) System.out.println(MESSAGE + "callAddMultipart entered"
+                    + " - key=" + key + NL
+                    + " - digestType=" + digestType + NL
+                    + " - digest=" + digest + NL
+                    + " - lengthS=" + lengthS + NL
+                    );
+        if (DEBUG) System.out.println("addVersionMultipart entered");
+        
+        return fixity(
+            null,
+            key,
+            digestType,
+            digest,
+            lengthS,
+            formatType,
+            cs,
+            sc);
+    }
+    
+    @GET
+    @Path("/fixity/{key}")
+    public Response callFixityQuery(
+            @PathParam("key") String key,
+            @DefaultValue("") @QueryParam("digestType") String digestType,
+            @DefaultValue("") @QueryParam("digest") String digest, 
+            @DefaultValue("") @QueryParam("length") String lengthS, 
+            @DefaultValue("anvl") @QueryParam("t") String formatType,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+        if (DEBUG) System.out.println(MESSAGE + "callAddMultipart entered"
+                    + " - key=" + key + NL
+                    + " - digestType=" + digestType + NL
+                    + " - digest=" + digest + NL
+                    + " - lengthS=" + lengthS + NL
+                    );
+        if (DEBUG) System.out.println("addVersionMultipart entered");
+        
+        return fixity(
+            null,
+            key,
+            digestType,
+            digest,
+            lengthS,
+            formatType,
+            cs,
+            sc);
+    }
+
+    @GET
+    @Path("/data/{key}")
+    public Response callGetContent(
+            @PathParam("key") String key,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+        if (DEBUG) System.out.println("Entered callGetContent");
+        return getCloudStream(
+            null,
+            key,
+            cs,
+            sc);
+    } 
+    
+    @DELETE
+    @Path("/delete/{key}")
+    public Response callDelete(
+            @PathParam("key") String key,
+            @DefaultValue("xhtml") @QueryParam("t") String formatType,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+        return deleteContent(
+            null,
             key,
             formatType,
             cs,

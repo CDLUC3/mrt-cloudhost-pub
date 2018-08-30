@@ -87,10 +87,10 @@ public class JerseyUtil
      * @return node identifier
      * @throws TException invalid node identifier
      */
-    protected int getNodeID(String parm)
+    protected long getNodeID(String parm)
         throws TException
     {
-        int retNode = 0;
+        long retNode = 0;
         if (StringUtil.isAllBlank(parm)){
             throw new TException.INVALID_OR_MISSING_PARM("Node not supplied");
         }
