@@ -39,6 +39,7 @@ public class AppDocker {
  
     private String prefix = null;
     private Properties hostProp = null;
+    private String nodeName = null;
     private Integer cloudhostNode = null;
     private LoggerInf logger = null;
     
@@ -60,9 +61,12 @@ public class AppDocker {
         if (args.length > 3) {
             cloudhostNode = convInt("pairtree node", args[3]);
         }
-        //new AppDocker().start(password, sslPort, standardPort, cloudhostNode);
+        new AppDocker().start(password, sslPort, standardPort, cloudhostNode);
         
-        new AppDocker().start("cdluc3", 30443, 38080, 8002);
+        //new AppDocker().start("cdluc3", 30443, 38080, 8002); // legit
+        //new AppDocker().start("cdluc3", 30443, 38080, null); // set default
+        //new AppDocker().start("cdluc3", 30443, 38080, 9999); // not supported exception
+        //new AppDocker().start("xxxxxx", 30443, 38080, null); // error but only on execution
     }
     
     private static int convInt(String header, String integerS)
@@ -92,34 +96,48 @@ public class AppDocker {
         if (hostProp == null) {
             throw new TException.INVALID_OR_MISSING_PARM("resources/CloudhostServer.properties" + " not supplied");
         }
-        if (cloudhostNode != null) {
-            hostProp.setProperty("cloudhostNode", "" + cloudhostNode);
-            this.cloudhostNode = cloudhostNode;
+        nodeName = hostProp.getProperty("nodeName");
+        if (StringUtil.isAllBlank(nodeName)) {
+            throw new TException.INVALID_OR_MISSING_PARM("nodename not supplied");
         }
+        if (!nodeName.equals("nodes-cs-emb")) {
+            throw new TException.INVALID_OR_MISSING_PARM("For AppDocker nodeName=nodes-cs-emb is required");
+        }
+        this.cloudhostNode = cloudhostNode;
         logger = new TFileLogger(null, 0, 0);
-        getPrefix(cloudhostNode);
-        System.out.println("prefix***:" + prefix);
+        getPrefix();
+        
+        // test set prefix
+        File base = new File(prefix);
+        if (!base.exists()) {
+            throw new TException.INVALID_OR_MISSING_PARM("Cloudhost base not found:" + prefix);
+        }
+            
+        // set context properties
+        hostProp.setProperty("cloudhostNode", "" + this.cloudhostNode);
+        hostProp.setProperty("cloudhostPrefix", prefix);
+        System.out.println(PropertiesUtil.dumpProperties("AppDocker hostProp", hostProp));
+        
         addWebxml();
         addFilecloud();
         addKeystore();
         setJetty(password, sslPort, standardPort);
     }
     
-    public void getPrefix(Integer cloudhostNode)
+    public void getPrefix()
             throws ServletException, MalformedURLException, Exception
     {
         try {
             if (cloudhostNode == null) {
                 prefix = ".";
+                cloudhostNode = 8100;
                 return;
             }
-            String nodeName = hostProp.getProperty("nodeName");
-            if (StringUtil.isAllBlank(nodeName)) {
-                throw new TException.INVALID_OR_MISSING_PARM("nodename not supplied");
-            }
-            
             NodeIO nodes = new NodeIO(nodeName, logger);
             NodeIO.AccessNode accessNode = nodes.getAccessNode(cloudhostNode);
+            if (accessNode == null) {
+                throw new TException.INVALID_OR_MISSING_PARM("cloudhostNode not supported:" + cloudhostNode);
+            }
             System.out.println("accessNode.serviceType=" + accessNode.serviceType);
             if (!accessNode.serviceType.equals("pairtree")) {
                 throw new TException.INVALID_OR_MISSING_PARM("nodename not supplied");
