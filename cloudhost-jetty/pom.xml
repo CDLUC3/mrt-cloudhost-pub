@@ -10,6 +10,8 @@
   <url>http://maven.apache.org</url>
   <properties>
     <tomcat.version>8.0.28</tomcat.version>
+    <jarBranch>demo</jarBranch>
+    <copyName>mrt-cloudhost-1.0.jar</copyName>
   </properties>
   <dependencies>
     <dependency>
@@ -189,7 +191,7 @@
                 <transformer
                   implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <manifestEntries>
-                    <Main-Class>launch.AppSSL</Main-Class>
+                    <Main-Class>launch.AppDocker</Main-Class>
                   </manifestEntries>
                 </transformer>
               </transformers>
@@ -197,6 +199,35 @@
           </execution>
         </executions>
       </plugin>
+      
+      <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>copy</id>
+                    <phase>install</phase>
+                    <goals>
+                        <goal>copy</goal>
+                    </goals>
+                    <configuration>
+                        <artifactItems>
+                            <artifactItem>
+                                <groupId>org.cdlib.mrt</groupId>
+                                <artifactId>mrt-cloudhostjetty</artifactId>
+                                <type>jar</type>
+                                 <version>1.0-SNAPSHOT</version>
+                                <overWrite>true</overWrite>
+                                <outputDirectory>./${jarBranch}/</outputDirectory>
+                                <destFileName>${copyName}</destFileName>
+                            </artifactItem>
+
+                        </artifactItems>
+
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
     </plugins>
   </build> 
 </project>

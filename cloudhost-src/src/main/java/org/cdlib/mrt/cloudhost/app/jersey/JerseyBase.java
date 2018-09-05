@@ -93,7 +93,7 @@ public class JerseyBase
     }
     
     public Response add(
-            long node,
+            Long node,
             String key,
             String sha256,
             InputStream inStream, 
@@ -111,6 +111,7 @@ public class JerseyBase
         try {
             if ((sha256 != null) && (sha256.length() == 0)) sha256 = null;
             CloudhostService service = getService(sc);
+            node = testNode(node, service);
             logger = service.getLogger();
             CloudhostAddState responseState = service.add(node, key, sha256, inStream);
             return getStateResponse(responseState, formatType, logger, cs, sc);
@@ -130,7 +131,7 @@ public class JerseyBase
     }
     
     public Response fixity(
-            long node,
+            Long node,
             String key,
             String digestType,
             String digest,
@@ -143,6 +144,7 @@ public class JerseyBase
         LoggerInf logger = null;
         try {
             CloudhostService service = getService(sc);
+            node = testNode(node, service);
             logger = service.getLogger();
             long length = 0;
             if (StringUtil.isAllBlank(lengthS)) {
@@ -217,7 +219,7 @@ public class JerseyBase
      * @throws TException processing exception
      */
     public Response getCloudStream(
-            long node,
+            Long node,
             String key,
             CloseableService cs,
             ServletConfig sc)
@@ -229,6 +231,7 @@ public class JerseyBase
                     + " - key=" + key
                     );
             CloudhostService service = getService(sc);
+            node = testNode(node, service);
             logger = service.getLogger();
             service.getMetaExc(node, key);
             if (DEBUG) System.out.println("after service.getMetadata");
@@ -254,7 +257,7 @@ public class JerseyBase
     }
     
     public Response deleteContent(
-            long node,
+            Long node,
             String key,
             String formatType,
             CloseableService cs,
@@ -265,6 +268,7 @@ public class JerseyBase
         LoggerInf logger = null;
         try {
             CloudhostService service = getService(sc);
+            node = testNode(node, service);
             logger = service.getLogger();
             CloudhostDeleteState responseState = service.deleteContent(node, key);
             return getStateResponse(responseState, formatType, logger, cs, sc);
@@ -284,7 +288,7 @@ public class JerseyBase
     }
     
     public Response getMetadata(
-            long node,
+            Long node,
             String key,
             String formatType,
             CloseableService cs,
@@ -300,6 +304,7 @@ public class JerseyBase
         LoggerInf logger = null;
         try {
             CloudhostService service = getService(sc);
+            node = testNode(node, service);
             logger = service.getLogger();
             CloudhostMetaState responseState = service.getMetadata(node, key);
             return getStateResponse(responseState, formatType, logger, cs, sc);
@@ -319,7 +324,7 @@ public class JerseyBase
     }
     
     public Response getServiceStatus(
-            long node,
+            Long node,
             String formatType,
             CloseableService cs,
             ServletConfig sc)
@@ -329,6 +334,7 @@ public class JerseyBase
         LoggerInf logger = null;
         try {
             CloudhostService service = getService(sc);
+            node = testNode(node, service);
             logger = service.getLogger();
             CloudhostServiceState responseState = service.getServiceStatus(node);
             return getStateResponse(responseState, formatType, logger, cs, sc);
@@ -348,7 +354,7 @@ public class JerseyBase
     }
     
     public Response getServiceState(
-            long node,
+            Long node,
             Integer forceTest,
             String formatType,
             CloseableService cs,
@@ -359,6 +365,7 @@ public class JerseyBase
         LoggerInf logger = null;
         try {
             CloudhostService service = getService(sc);
+            node = testNode(node, service);
             logger = service.getLogger();
             CloudhostServiceState responseState = service.getServiceState(node, forceTest);
             return getStateResponse(responseState, formatType, logger, cs, sc);
@@ -375,6 +382,19 @@ public class JerseyBase
             System.out.println("TRACE:" + StringUtil.stackTrace(ex));
             throw new TException.GENERAL_EXCEPTION(MESSAGE + "Exception:" + ex);
         }
+    }
+    
+    private long testNode(Long node, CloudhostService service)
+        throws TException
+    {
+        Long cloudhostNode = node;
+        if (node == null) {
+            cloudhostNode = service.getCloudhostNode();
+            if (cloudhostNode == null) {
+                throw new TException.INVALID_ARCHITECTURE("Cloudhost node not resolved");
+            }
+        }
+        return cloudhostNode;
     }
     
     public static class CloudStreamingOutput
@@ -418,7 +438,7 @@ public class JerseyBase
                     } catch (Exception ex) { }
                 }
             }
-    
+            
             protected void log(String msg)
             {
                 if (DEBUG) System.out.println("[JerseyStorage]>" + msg);

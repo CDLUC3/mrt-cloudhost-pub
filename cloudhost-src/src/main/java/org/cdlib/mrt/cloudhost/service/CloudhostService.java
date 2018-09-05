@@ -30,6 +30,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.cdlib.mrt.cloudhost.service;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Properties;
 import org.cdlib.mrt.core.FileContent;
@@ -50,6 +51,7 @@ import org.cdlib.mrt.s3.cloudhost.CloudhostFixityState;
 import org.cdlib.mrt.s3.cloudhost.CloudhostMetaState;
 import org.cdlib.mrt.s3.cloudhost.CloudhostServiceState;
 import org.cdlib.mrt.utility.FileUtil;
+import org.cdlib.mrt.utility.PropertiesUtil;
 
 /**
  * Base properties for Replication
@@ -69,13 +71,14 @@ public class CloudhostService
     protected NodeIO nodes = null;
     //protected NodeService service = null;
     protected LoggerInf logger = null;
+    protected Long cloudhostNode = null;
 
     public static CloudhostService getCloudhostService(LoggerInf logger, Properties setupProp)
         throws TException
     {
         return new CloudhostService(logger, setupProp);
     }
-
+    
     protected CloudhostService(LoggerInf logger, Properties setupProp)
         throws TException
     {
@@ -100,7 +103,11 @@ public class CloudhostService
                 throw new TException.INVALID_OR_MISSING_PARM(MESSAGE + "non-numeric node:" + nodeNumber);
             }
                     */
-            
+            System.out.println(PropertiesUtil.dumpProperties("***" + NAME + "***", setupProp));
+            String cloudhostNodeS = setupProp.getProperty("cloudhostNode");
+            if (cloudhostNodeS != null) {
+                cloudhostNode = Long.parseLong(cloudhostNodeS);
+            }
             nodes = new NodeIO(nodeName, logger);
             nodes.printNodes(NAME);
 
@@ -291,5 +298,9 @@ public class CloudhostService
     public LoggerInf getLogger()
     {
         return logger;
+    }
+
+    public Long getCloudhostNode() {
+        return cloudhostNode;
     }
 }
