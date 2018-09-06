@@ -10,7 +10,7 @@
   <url>http://maven.apache.org</url>
   <properties>
     <tomcat.version>8.0.28</tomcat.version>
-    <jarBranch>demo</jarBranch>
+    <jarBranch>default</jarBranch>
     <copyName>mrt-cloudhost-1.0.jar</copyName>
   </properties>
   <dependencies>

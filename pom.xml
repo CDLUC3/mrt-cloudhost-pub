@@ -34,11 +34,10 @@
             </modules>
         </profile>
         <profile>
-          <id>emb</id> 
+            <id>jetty</id> 
             <modules>
-                <module>cloudhost-conf</module>
                 <module>cloudhost-src</module>
-                <module>cloudhost-emb</module>
+                <module>cloudhost-jetty</module>
             </modules>
         </profile>
      </profiles>
