@@ -50,6 +50,7 @@ import org.cdlib.mrt.s3.cloudhost.CloudhostDeleteState;
 import org.cdlib.mrt.s3.cloudhost.CloudhostFixityState;
 import org.cdlib.mrt.s3.cloudhost.CloudhostMetaState;
 import org.cdlib.mrt.s3.cloudhost.CloudhostServiceState;
+import org.cdlib.mrt.s3.service.CloudStoreAbs;
 import org.cdlib.mrt.utility.FileUtil;
 import org.cdlib.mrt.utility.PropertiesUtil;
 
@@ -109,7 +110,7 @@ public class CloudhostService
                 cloudhostNode = Long.parseLong(cloudhostNodeS);
             }
             nodes = new NodeIO(nodeName, logger);
-            nodes.printNodes(NAME);
+            nodes.printNodes(NAME, cloudhostNode);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -123,9 +124,13 @@ public class CloudhostService
         NodeService service = null;
         try {
             service =  NodeService.getNodeService(nodes, node, logger);
+            if (service == null) {
+                throw new TException.INVALID_OR_MISSING_PARM(MESSAGE + "getManager: missing service");
+            }
             return CloudServiceManager.getCloudServiceManager(service,logger);
             
         } catch (TException tex) {
+            CloudStoreAbs.dumpException(NAME, tex);
             throw tex;
             
         } catch (Exception ex) {

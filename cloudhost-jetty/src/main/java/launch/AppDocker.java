@@ -81,7 +81,7 @@ public class AppDocker {
         } catch (Exception ex) {
             throw new TException.INVALID_OR_MISSING_PARM(header + " supplied value not numeric:" + integerS);
         }
-        System.out.println("*convInt*" + header + ":" + retVal);
+        //System.out.println("*convInt*" + header + ":" + retVal);
         return retVal;
     }
  
