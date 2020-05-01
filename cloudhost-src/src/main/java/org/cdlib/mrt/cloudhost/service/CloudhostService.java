@@ -265,6 +265,22 @@ public class CloudhostService
         manager.getMetaExc(key);
     }
     
+    public CloudhostMetaState getPreSigned(
+            long node,
+            long expirationMinutes,
+            String key,
+            String contentType,
+            String contentDisp)
+        throws TException
+    {
+        CloudServiceManager manager = getManager(node);
+        return manager.getPreSigned (
+            expirationMinutes,
+            key,
+            contentType,
+            contentDisp);
+    }
+    
     public String getBucket(long node)
         throws TException
     {

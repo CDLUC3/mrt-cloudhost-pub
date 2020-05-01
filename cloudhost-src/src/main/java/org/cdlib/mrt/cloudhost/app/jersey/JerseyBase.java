@@ -36,8 +36,11 @@ import java.io.InputStream;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
+import java.util.Properties;
 import javax.servlet.ServletConfig;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
@@ -49,11 +52,13 @@ import org.cdlib.mrt.utility.LoggerInf;
 import org.cdlib.mrt.utility.StringUtil;
 import org.cdlib.mrt.cloudhost.app.CloudhostInit;
 import org.cdlib.mrt.cloudhost.service.CloudhostService;
+import org.cdlib.mrt.core.DateState;
 import org.cdlib.mrt.s3.cloudhost.CloudhostAddState;
 import org.cdlib.mrt.s3.cloudhost.CloudhostDeleteState;
 import org.cdlib.mrt.s3.cloudhost.CloudhostFixityState;
 import org.cdlib.mrt.s3.cloudhost.CloudhostMetaState;
 import org.cdlib.mrt.s3.cloudhost.CloudhostServiceState;
+import org.cdlib.mrt.utility.DateUtil;
 
 /**
  * Base Jersey handling for both Storage and CAN services
@@ -256,6 +261,7 @@ public class JerseyBase
         }
     }
     
+    
     public Response deleteContent(
             Long node,
             String key,
@@ -307,6 +313,73 @@ public class JerseyBase
             node = testNode(node, service);
             logger = service.getLogger();
             CloudhostMetaState responseState = service.getMetadata(node, key);
+            return getStateResponse(responseState, formatType, logger, cs, sc);
+
+        } catch (TException tex) {
+            try {
+                return getExceptionResponse(cs, tex, "xml", logger);
+
+            } catch (Exception ex2) {
+                throw new TException.GENERAL_EXCEPTION(ex2);
+            }
+
+        } catch (Exception ex) {
+            System.out.println("TRACE:" + StringUtil.stackTrace(ex));
+            throw new TException.GENERAL_EXCEPTION(MESSAGE + "Exception:" + ex);
+        }
+    }
+    
+    /**
+     * Generate a Jersey response using PreSignedState content
+     * @param nodeIDS String nodeID for processing
+     * @param key key value for nodeID cloud 
+     * @param expireMinutesS String minutes until PreSigned URL expires
+     * @param contentType ContentType header this data
+     * @param contentDisp ContentDisp header this data
+     * @param formatType
+     * @param cs
+     * @param sc
+     * @return
+     * @throws TException 
+     */
+    protected Response cloudPreSign(
+            String nodeIDS,
+            String key,
+            String expireMinutesS,
+            String contentType,
+            String contentDisp,
+            String formatType,
+            CloseableService cs,
+            ServletConfig sc
+    )
+        throws TException
+    {
+        LoggerInf logger = null;
+        try {
+            Long nodeID = getNodeID(nodeIDS);
+            long expireMinutes = 0;
+            try {
+                expireMinutes = Long.parseLong(expireMinutesS);
+            } catch (Exception ex) {
+                expireMinutes=240;
+            }
+            if (StringUtil.isAllBlank(contentType)) {
+                contentType = null;
+            }
+            if (StringUtil.isAllBlank(contentDisp)) {
+                contentDisp = null;
+            }
+            CloudhostService service = getService(sc);
+            logger = service.getLogger();
+            nodeID = testNode(nodeID, service);
+            CloudhostMetaState responseState 
+                = service.getPreSigned(
+                    nodeID,
+                    expireMinutes,
+                    key,
+                    contentType,
+                    contentDisp
+                );
             return getStateResponse(responseState, formatType, logger, cs, sc);
 
         } catch (TException tex) {

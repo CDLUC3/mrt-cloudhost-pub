@@ -240,6 +240,54 @@ public class CloudServiceManager
         }
     }
     
+
+    public CloudhostMetaState getPreSigned (
+            long expirationMinutes,
+            String key,
+            String contentType,
+            String contentDisp)
+        throws TException
+    {
+        Properties prop = new Properties();
+        try {
+        CloudResponse response = service.getPreSigned (
+            expirationMinutes,
+            key,
+            contentType,
+            contentDisp);
+        Exception ex = response.getException();
+        if (ex != null) {
+            throw (TException) ex;
+        }
+        prop.setProperty("presignUrl", "" + response.getReturnURL());
+        prop.setProperty("expirationMinutes", "" + expirationMinutes);
+        if (contentType != null) {
+            prop.setProperty("contentType", contentType);
+        }
+        if (contentDisp != null) {
+            prop.setProperty("contentDisp", contentDisp);
+        }
+        if (prop == null) {
+            throw new TException.INVALID_OR_MISSING_PARM("Exception occurs getting:" + key);
+        }
+        if (prop.size() == 0) {
+            throw new TException.REQUESTED_ITEM_NOT_FOUND("Key not found:" + key);
+        }
+        CloudhostMetaState state = new CloudhostMetaState()
+                .setBucket(service.getBucket())
+                .setKey(key)
+                .setProp(prop)
+                ;
+        return state;
+        
+        } catch (TException tex) {
+            return new CloudhostMetaState()
+                .setBucket(service.getBucket())
+                .setKey(key)
+                .setError(tex.toString());
+        }
+    }
+    
     protected FileComponent getFileComponent(String key)
         throws TException
     {

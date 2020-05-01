@@ -51,6 +51,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.cdlib.mrt.formatter.FormatterInf;
 import org.cdlib.mrt.cloudhost.app.jersey.JerseyBase;
+import org.cdlib.mrt.utility.LoggerInf;
 import org.cdlib.mrt.utility.TException;
 
 /**
@@ -604,6 +605,32 @@ public class JerseyCloudhost
             formatType,
             cs,
             sc);
+    }
+    
+    
+
+    @GET
+    @Path("presign/{nodeS}/{key}")
+    public Response callCloudPreSign(
+            @PathParam("nodeS") String nodeIDS,
+            @PathParam("key") String key,
+            @DefaultValue("240") @QueryParam("timeout") String expireMinutesS,
+            @DefaultValue("") @QueryParam("contentType") String contentType,
+            @DefaultValue("") @QueryParam("contentDisposition") String contentDisp,
+            @DefaultValue("xhtml") @QueryParam("t") String formatType,
+            @Context CloseableService cs,
+            @Context ServletConfig sc)
+        throws TException
+    {
+            return cloudPreSign(
+                nodeIDS,
+                key,
+                expireMinutesS,
+                contentType,
+                contentDisp,
+                formatType,
+                cs,
+                sc);
     }
 
 }

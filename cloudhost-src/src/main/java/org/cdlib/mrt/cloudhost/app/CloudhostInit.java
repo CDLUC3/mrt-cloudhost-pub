@@ -46,6 +46,10 @@ import org.cdlib.mrt.utility.TException;
 public class CloudhostInit
         extends TFrameInit
 {
+    protected static final String NAME = "CloudhostInit";
+    protected static final String MESSAGE = NAME + ": ";
+    protected static final boolean DEBUG = false;
+
     private enum Type {
         Regular, Default
     }
@@ -72,7 +76,9 @@ public class CloudhostInit
         String serviceName = "cloudService";
         ServletContext servletContext = servletConfig.getServletContext();
         Properties jettyProp = (Properties)servletContext.getAttribute("jettyProp");
-        if (jettyProp == null) System.out.println("***jettyProp not found");
+        if (jettyProp == null) {
+            if (DEBUG) System.out.println("***jettyProp not found");
+        }
         CloudhostInit cloudServiceInit  = (CloudhostInit)servletContext.getAttribute(serviceName);
         if (cloudServiceInit == null) {
             cloudServiceInit = new CloudhostInit(Type.Regular, servletConfig, serviceName, jettyProp);
@@ -112,10 +118,12 @@ public class CloudhostInit
         if (type == Type.Regular) {
             cloudhostService = CloudhostService.getCloudhostService(
                     tFrame.getLogger(), resourceProp);
+            return;
         }
         if (type == Type.Default) {
             cloudhostService = CloudhostService.getCloudhostService(
                     tFrame.getLogger(), resourceProp);
+            return;
         }
     }
 }
