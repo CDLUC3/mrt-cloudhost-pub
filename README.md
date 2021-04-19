@@ -31,7 +31,4 @@ See [Merritt Docker](https://github.com/CDLUC3/merritt-docker) for a description
 
 ### Deployment and Operations at CDL
 
-See the implementing microservices for details.
-
-# mrt-cloudhost-pub
-cloudhost server for lightweight cloud emulation on directory - provides support for content stored at UNM
+N/A
