@@ -6,17 +6,9 @@ This library is part of the [Merritt Preservation System](https://github.com/CDL
 
 Historically, this code implemented acloudhost server for lightweight cloud emulation on directoryfor content stored at UNM.
 
-This library contains tools that are useful in supporting the Merritt Storage Services.
+This library contains tools that are useful in supporting the Merritt Storage Services.  
 
-## Dependencies
-
-- _Get more info from David_
-
-## Used By
-
-This code is used by.
-
-- _Get more info from David_
+*This code is intended to be deprecated since all Merritt cloud providers are now S3 API compliant.*
 
 ## For external audiences
 This code is not intended to be run apart from the Merritt Preservation System.
